@@ -8,7 +8,7 @@ import base64
 app = FastAPI()
 model = YOLO('models/best.pt')  # 모델 경로 적절히 지정
 
-@app.post("/predict/")
+@app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     # 이미지 로드
     image_bytes = await file.read()
