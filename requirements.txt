@@ -1,8 +1,10 @@
-fastapi
-uvicorn
-ultralytics
-python-multipart
-pillow
-torch
-torchvision
-numpy
+# Core ML
+torch>=2.0.0
+torchvision>=0.15.0
+ultralytics>=8.0.0
+
+# API Server
+fastapi>=0.100.0
+uvicorn>=0.23.0
+python-multipart>=0.0.6
+pillow>=10.0.0
