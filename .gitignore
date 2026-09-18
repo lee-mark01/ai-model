@@ -23,6 +23,9 @@ Thumbs.db
 .vscode/
 .history/
 
+# Claude Code
+.claude/
+
 # 로그, 결과, 임시파일
 *.log
 *.tmp
@@ -31,3 +34,27 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# YOLO 학습 결과 (runs/ 폴더는 ultralytics가 자동 생성)
+runs/
+cockroach_detection/
+*_detection/
+
+# 모델 파일 (best.pt만 제외하고 나머지 .pt 파일 무시)
+*.pt
+!models/best.pt
+!models/*.pt
+
+# 데이터셋 이미지 (data.yaml만 추적)
+dataset/train/images/
+dataset/train/labels/
+dataset/valid/images/
+dataset/valid/labels/
+dataset/test/images/
+dataset/test/labels/
+!dataset/data.yaml
+
+# 결과 폴더
+results/*/
+results/**/*.jpg
+results/**/*.png

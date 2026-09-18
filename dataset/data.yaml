@@ -2,12 +2,11 @@ train: train/images
 val: valid/images
 test: test/images
 
-nc: 1
-names: ['cockroach']
+nc: 3
+names: ['cockroach', 'ant', 'fly']
 
 roboflow:
   workspace: marks-workspace-ciafp
-  project: cockroach-gkzut-1kcdz
-  version: 3
+  project: pest-detection-4class
+  version: 1
   license: CC BY 4.0
-  url: https://universe.roboflow.com/marks-workspace-ciafp/cockroach-gkzut-1kcdz/dataset/3
