@@ -53,6 +53,13 @@ CLASS_COLORS = {
     2: "blue"      # spider
 }
 
+# 클래스별 신뢰도 임계값 (데이터 불균형 보정)
+CLASS_CONF_THRESHOLDS = {
+    0: 0.45,  # cockroach - 학습 데이터 풍부, FP 억제
+    1: 0.35,  # ant
+    2: 0.30,  # spider - 데이터 부족, recall 확보
+}
+
 @app.get("/")
 async def root():
     """API 루트"""
@@ -91,8 +98,8 @@ async def predict(file: UploadFile = File(...)):
         image_bytes = await file.read()
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
-        # 모델 추론
-        results = model(image, conf=0.4)  # 신뢰도 임계값 0.4
+        # 모델 추론 (낮은 base conf로 전체 후보 확보 후 클래스별 필터링)
+        results = model(image, conf=min(CLASS_CONF_THRESHOLDS.values()))
 
         # 바운딩박스 그리기 및 JSON 정보 추출
         predictions = []
@@ -102,6 +109,11 @@ async def predict(file: UploadFile = File(...)):
             xyxy = box.xyxy[0].tolist()  # [x1, y1, x2, y2]
             label_idx = int(box.cls[0])
             score = float(box.conf[0])
+
+            # 클래스별 임계값 필터링
+            threshold = CLASS_CONF_THRESHOLDS.get(label_idx, 0.4)
+            if score < threshold:
+                continue
 
             # 클래스 이름
             class_name = CLASS_NAMES.get(label_idx, f"unknown_{label_idx}")
@@ -163,8 +175,8 @@ async def predict_json_only(file: UploadFile = File(...)):
         image_bytes = await file.read()
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
-        # 모델 추론
-        results = model(image, conf=0.4)
+        # 모델 추론 (낮은 base conf로 전체 후보 확보 후 클래스별 필터링)
+        results = model(image, conf=min(CLASS_CONF_THRESHOLDS.values()))
 
         # JSON 정보 추출
         predictions = []
@@ -172,6 +184,12 @@ async def predict_json_only(file: UploadFile = File(...)):
             xyxy = box.xyxy[0].tolist()
             label_idx = int(box.cls[0])
             score = float(box.conf[0])
+
+            # 클래스별 임계값 필터링
+            threshold = CLASS_CONF_THRESHOLDS.get(label_idx, 0.4)
+            if score < threshold:
+                continue
+
             class_name = CLASS_NAMES.get(label_idx, f"unknown_{label_idx}")
 
             predictions.append({
